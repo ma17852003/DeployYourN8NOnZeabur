@@ -1,0 +1,269 @@
+# yaml-language-server: $schema=https://schema.zeabur.app/template.json
+apiVersion: zeabur.com/v1
+kind: Template
+metadata:
+  name: n8n (James Wu AI Startups)
+spec:
+  description: |
+    n8n is a powerful workflow automation platform that allows you to create AI-driven automation processes, focusing on deep data integration.
+  icon: https://i.imgur.com/AaKxvK2.png
+  variables:
+    - key: PUBLIC_DOMAIN
+      type: DOMAIN
+      name: n8n Domain
+      description: The domain for accessing your n8n automation platform.
+  tags:
+    - Tool
+    - Starter
+    - Automation
+    - n8n
+    - AI
+    - Workflow
+  readme: |-
+    # n8n - AI Automation Platform
+
+    **Current Version:** 1.100.1
+
+    What is n8n?
+
+    n8n is a powerful workflow automation platform that allows you to build flexible, AI-driven workflows, with a focus on deep data integration. With its intuitive interface and shareable templates, even team members with limited technical knowledge can collaborate effectively.
+
+    Unlike other automation tools, n8n’s complexity is not a limitation. You can build complex workflows and connect a wide variety of services and APIs without worrying about budget constraints.
+
+    ## James Wu AI Startups - James Wu YouTube Channel
+
+    This template is provided by [James Wu AI Startups - James Wu](https://www.youtube.com/@JamesWuAIStartup365), where we focus on AI automation tutorials using n8n:
+
+    - Setting up n8n to integrate with various new tools (Google OAuth, MCP)
+    - Building AI agents and automation workflows
+    - Digital productivity enhancement tools
+
+    ## Deployment
+
+    This template supports **one-click deployment**. Simply bind a domain and start using n8n to automate your workflows immediately.
+  services:
+    - name: postgresql
+      icon: https://raw.githubusercontent.com/zeabur/service-icons/main/marketplace/postgresql.svg
+      template: PREBUILT
+      spec:
+        source:
+          image: postgres:17
+          command:
+            - docker-entrypoint.sh
+            - -c
+            - config_file=/etc/postgresql/postgresql.conf
+        ports:
+          - id: database
+            port: 5432
+            type: TCP
+        volumes:
+          - id: data
+            dir: /var/lib/postgresql/data
+        instructions:
+          - type: TEXT
+            title: Connection String
+            content: postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${PORT_FORWARDED_HOSTNAME}:${DATABASE_PORT_FORWARDED_PORT}/${POSTGRES_DATABASE}
+          - type: TEXT
+            title: PostgreSQL Connect Command
+            content: psql "postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${PORT_FORWARDED_HOSTNAME}:${DATABASE_PORT_FORWARDED_PORT}/${POSTGRES_DATABASE}"
+          - type: TEXT
+            title: PostgreSQL username
+            content: ${POSTGRES_USERNAME}
+            category: Credentials
+          - type: PASSWORD
+            title: PostgreSQL password
+            content: ${POSTGRES_PASSWORD}
+            category: Credentials
+          - type: TEXT
+            title: PostgreSQL database
+            content: ${POSTGRES_DATABASE}
+            category: Credentials
+          - type: TEXT
+            title: PostgreSQL host
+            content: ${PORT_FORWARDED_HOSTNAME}
+            category: Hostname & Port
+          - type: TEXT
+            title: PostgreSQL port
+            content: ${DATABASE_PORT_FORWARDED_PORT}
+            category: Hostname & Port
+        env:
+          PGDATA:
+            default: /var/lib/postgresql/data/pgdata
+          POSTGRES_CONNECTION_STRING:
+            default: postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
+            expose: true
+            readonly: true
+          POSTGRES_DATABASE:
+            default: ${POSTGRES_DB}
+            expose: true
+            readonly: true
+          POSTGRES_DB:
+            default: zeabur
+          POSTGRES_HOST:
+            default: ${CONTAINER_HOSTNAME}
+            expose: true
+            readonly: true
+          POSTGRES_PASSWORD:
+            default: ${PASSWORD}
+            expose: true
+          POSTGRES_PORT:
+            default: ${DATABASE_PORT}
+            expose: true
+            readonly: true
+          POSTGRES_URI:
+            default: ${POSTGRES_CONNECTION_STRING}
+            expose: true
+            readonly: true
+          POSTGRES_USER:
+            default: root
+          POSTGRES_USERNAME:
+            default: ${POSTGRES_USER}
+            expose: true
+            readonly: true
+        configs:
+          - path: /etc/postgresql/postgresql.conf
+            template: |
+              # PostgreSQL Configuration
+              # Reference: https://github.com/postgres/postgres/blob/master/src/backend/utils/misc/postgresql.conf.sample
+
+              # Connection Settings
+              listen_addresses = '*'
+              max_connections = 100
+
+              # Memory Settings
+              shared_buffers = 128MB
+              dynamic_shared_memory_type = posix
+
+              # Write-Ahead Log
+              max_wal_size = 1GB
+              min_wal_size = 80MB
+
+              # Localization
+              log_timezone = 'Etc/UTC'
+              datestyle = 'iso, mdy'
+              timezone = 'Etc/UTC'
+              lc_messages = 'en_US.utf8'
+              lc_monetary = 'en_US.utf8'
+              lc_numeric = 'en_US.utf8'
+              lc_time = 'en_US.utf8'
+
+              # Text Search
+              default_text_search_config = 'pg_catalog.english'
+            permission: null
+            envsubst: null
+        healthCheck:
+          type: TCP
+          port: database
+
+    - name: n8n
+      icon: https://n8n.io/favicon.ico
+      dependencies:
+        - postgresql
+      template: PREBUILT
+      spec:
+        source:
+          image: n8nio/n8n:1.100.1
+        ports:
+          - id: web
+            port: 5678
+            type: HTTP
+        volumes:
+          - id: data
+            dir: /root/.n8n
+        env:
+          # Database Configuration
+          DB_TYPE:
+            default: postgresdb
+          DB_POSTGRESDB_DATABASE:
+            default: ${POSTGRES_DATABASE}
+          DB_POSTGRESDB_HOST:
+            default: ${POSTGRES_HOST}
+          DB_POSTGRESDB_PASSWORD:
+            default: ${POSTGRES_PASSWORD}
+          DB_POSTGRESDB_PORT:
+            default: ${POSTGRES_PORT}
+          DB_POSTGRESDB_USER:
+            default: ${POSTGRES_USERNAME}
+
+          # n8n Configuration
+          GENERIC_TIMEZONE:
+            default: Asia/Taipei
+          TZ:
+            default: Asia/Taipei
+          N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS:
+            default: "true"
+          N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE:
+            default: "true"
+          N8N_DIAGNOSTICS_ENABLED:
+            default: "false"
+          N8N_ENCRYPTION_KEY:
+            default: ${PASSWORD}
+          N8N_HOST:
+            default: ${ZEABUR_WEB_DOMAIN}
+          N8N_RUNNERS_ENABLED:
+            default: "true"
+          NODE_ENV:
+            default: production
+          WEBHOOK_URL:
+            default: ${ZEABUR_WEB_URL}
+        healthCheck:
+          type: HTTP
+          port: web
+          http:
+            path: /healthz
+      domainKey: PUBLIC_DOMAIN
+
+localization:
+  zh-CN:
+    description: |
+      n8n 是一个强大的工作流自动化平台，让你能够构建 AI 驱动的自动化流程，专注于深度数据集成。
+    readme: |
+      # n8n - AI 自动化平台
+
+      **当前版本：** 1.100.1
+
+      ## 什么是 n8n？
+
+      n8n 是一个强大的工作流自动化平台，让你能够建立灵活、AI 驱动的工作流程，专注于深度数据集成。
+      通过其直观的界面和可共享的模板，即使是技术知识有限的团队成员也能有效协作。
+
+      与其他自动化工具不同，n8n 的复杂度不是限制。你可以构建复杂的工作流程，连接各种服务和 API，而不必担心预算限制。
+
+      ## James Wu AI Startups - James Wu YouTube 频道
+
+      此模板由 [James Wu AI Startups - James Wu](https://www.youtube.com/@JamesWuAIStartup365) 提供，我们专注于使用 n8n 进行 AI 自动化教学：
+
+      - 设置 n8n 与各种新工具集成（Google OAuth、MCP）
+      - 构建 AI 代理和自动化工作流程
+      - 数字生产力提升工具
+
+      ## 部署
+
+      这个模板支持**一键部署**。只需绑定域名，即可立即开始使用 n8n 来自动化你的工作流程。
+
+  zh-TW:
+    description: |
+      n8n 是一個強大的工作流自動化平台，讓你能夠建立 AI 驅動的自動化流程，專注於深度資料整合。
+    readme: |
+      # n8n - AI 自動化平台
+
+      **目前版本：** 1.100.1
+
+      ## 什麼是 n8n？
+
+      n8n 是一個強大的工作流自動化平台，讓你能夠建立靈活、AI 驅動的工作流程，專注於深度資料整合。
+      透過其直覺的介面和可分享的範本，即使是技術知識有限的團隊成員也能有效協作。
+
+      與其他自動化工具不同，n8n 的複雜度不是限制。你可以建立複雜的工作流程，連接各種服務和 API，而不必擔心預算限制。
+
+      ## James Wu AI Startups - James Wu YouTube 頻道
+
+      此模板由 [James Wu AI Startups - James Wu](https://www.youtube.com/@ai-brain-James Wu) 提供，我們專注於使用 n8n 進行 AI 自動化教學：
+
+      - 設定 n8n 與各種新工具整合（Google OAuth、MCP）
+      - 建立 AI 代理和自動化工作流程
+      - 數位生產力提升工具
+
+      ## 部署
+
+      這個模板支援**一鍵部署**。只需綁定網域，即可立即開始使用 n8n 來自動化你的工作流程。
