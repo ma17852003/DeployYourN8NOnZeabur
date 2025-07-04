@@ -14,7 +14,7 @@
 
 02. 再點選一鍵部署 n8n 範本
 
-[![Deploy on Zeabur](https://zeabur.com/button.svg)](https://zeabur.com/templates/0TUVZ7?referralCode=qwedsazxc78)
+[![Deploy on Zeabur](https://zeabur.com/button.svg)](https://zeabur.com/templates/JP88UN)
 
 ## 🚀 AI 自動化系列 | AI Automation with n8n & AI Agents
 
