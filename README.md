@@ -26,7 +26,7 @@
    [![YouTube](https://img.shields.io/badge/Watch%20on-YouTube-red?logo=youtube)](https://www.youtube.com/watch?v=hMc9XWqqOM4&t)
 
 02.  [🔥 0 程式碼！用 n8n + Gemini + Kling + ElevenLabs 自動把圖片變成 AI Shorts 影片｜James 的 Faceless Shorts 工廠 Part 2](https://www.patreon.com/posts/131883954)
-   [![YouTube](https://**img**.shields.io/badge/Watch%20on-YouTube-red?logo=youtube)](https://www.youtube.com/watch?v=ZfMzMLbaLjU&t)
+   [![YouTube](https://img.shields.io/badge/Watch%20on-YouTube-red?logo=youtube)](https://www.youtube.com/watch?v=ZfMzMLbaLjU&t)
 
 03.  [🔥 影片生成不求人！用 n8n + Gemini + YouTube API 打造 0 程式碼 Faceless Shorts 自動上傳工廠｜James 的 AI Shorts 工廠 Part 3](https://www.patreon.com/posts/133099554)
    [![YouTube](https://img.shields.io/badge/Watch%20on-YouTube-red?logo=youtube)](https://www.youtube.com/watch?v=IX9ILxza4HM&t)
